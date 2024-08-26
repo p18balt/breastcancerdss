@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breast Cancer Prediction</title>
+    <style>
+        /* Ensure body covers full viewport */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('images/image.webp'); /* Ensure the path is correct */
+            background-size: cover; /* Ensures the image covers the entire background */
+            background-position: center; /* Centers the image */
+            background-attachment: fixed; /* Keeps the image fixed while scrolling */
+            background-color: #f4f4f4; /* Fallback color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative; /* Establishes a stacking context */
+        }
+
+        #prediction-form {
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background to stand out against the image */
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 320px;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative; /* Ensure it appears above background */
+            z-index: 1; /* Higher than the background */
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 6px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 8px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            text-align: center;
+            padding: 10px;
+            background-size: cover;
+            background-position: center;
+            position: relative; /* Ensure it appears above background */
+            z-index: 2; /* Higher than the background */
+        }
+
+        .unhealthy {
+            background-color: red;
+            z-index: 2; /* Ensure it appears above background */
+        }
+
+        .healthy {
+            background-color: green;
+            background-image: url('images/image.webp'); /* Ensure the path is correct */
+            z-index: 2; /* Ensure it appears above background */
+        }
+    </style>
+</head>
+<body>
+    <form id="prediction-form">
+        <h1>Breast Cancer Predictor</h1>
+        <label for="bmi">BMI:</label>
+        <input type="number" step="0.1" id="bmi" name="bmi" required>
+
+        <label for="glucose">Glucose:</label>
+        <input type="number" id="glucose" name="glucose" required>
+
+        <label for="insulin">Insulin:</label>
+        <input type="number" id="insulin" name="insulin" required>
+
+        <label for="homa">HOMA:</label>
+        <input type="number" step="0.1" id="homa" name="homa" required>
+
+        <label for="leptin">Leptin:</label>
+        <input type="number" id="leptin" name="leptin" required>
+
+        <label for="adiponectin">Adiponectin:</label>
+        <input type="number" id="adiponectin" name="adiponectin" required>
+
+        <label for="resistin">Resistin:</label>
+        <input type="number" id="resistin" name="resistin" required>
+
+        <label for="mcp1">MCP1:</label>
+        <input type="number" id="mcp1" name="mcp1" required>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required>
+
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <p id="result"></p>
+
+    <script>
+        function submitForm() {
+            const formData = {
+                bmi: document.getElementById('bmi').value,
+                glucose: document.getElementById('glucose').value,
+                insulin: document.getElementById('insulin').value,
+                homa: document.getElementById('homa').value,
+                leptin: document.getElementById('leptin').value,
+                adiponectin: document.getElementById('adiponectin').value,
+                resistin: document.getElementById('resistin').value,
+                mcp1: document.getElementById('mcp1').value,
+                age: document.getElementById('age').value
+            };
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultElement = document.getElementById('result');
+                if (data.result === 'Unhealthy') {
+                    resultElement.innerText = 'Prediction: Healthy'; // Swap logic here
+                    resultElement.className = 'healthy'; // Swap class here
+                } else {
+                    resultElement.innerText = 'Prediction: Unhealthy'; // Swap logic here
+                    resultElement.className = 'unhealthy'; // Swap class here
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerText = `Error: ${error.message}`;
+            });
+        }
+    </script>
+</body>
+</html>
